@@ -1,0 +1,3 @@
+[submodule "LoRAT"]
+	path = LoRAT
+	url = https://github.com/LitingLin/LoRAT
