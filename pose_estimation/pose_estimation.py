@@ -1,4 +1,5 @@
 import argparse
+import copy
 import pickle
 import cv2
 import numpy as np
@@ -6,10 +7,12 @@ from scipy.spatial.transform import Rotation as R
 import math
 from pose_estimation_utils import *
 
+file_path = os.path.dirname(os.path.abspath(__file__))
+
 def parse_args():
     parser = argparse.ArgumentParser(description='estimate pose and distance')
     parser.add_argument('airport_name', help='ICAO airport code')
-    parser.add_argument('runways', nargs='+', help='A list of runway codes', type=int)
+    parser.add_argument('runways', nargs='+', help='A list of runway codes')
     parser.add_argument('keypoints_file_path',help=('path to detected keypoints file'))
     parser.add_argument('csv_file_path', help='path to groundtruth csv')
     args = parser.parse_args()
@@ -37,9 +40,9 @@ def estimate_slant_distance(tvec):
 def estimate_pose(corners, airport, runway):
     RUNWAY = (3,2)
     runway_parameters = find_by_airport_runway_number('runway_data.csv', airport, runway)
-    runway_width = float(runway_parameters['Width'])+1.5
+    runway_width = float(runway_parameters['Width'])
     aspect_ratio = float(runway_parameters['Aspect Ratio'])
-    yaw_offset = math.radians(int(runway_parameters['Yaw Offset'])-1.5)
+    yaw_offset = math.radians(int(runway_parameters['Yaw Offset']))
     n_images = corners.shape[0]
     meters_per_nautic_mile = 1852
 
@@ -55,9 +58,11 @@ def estimate_pose(corners, airport, runway):
         objpoints.append(objp)
         imgpoints.append(corners[i].astype(np.float32))
 
-    with open('camera_matrix.pkl', 'rb') as file:
+    camera_matrix_path = os.path.join(file_path, 'camera_calibration/camera_matrix.pkl')
+    distortion_path = os.path.join(file_path, 'camera_calibration/distortion.pkl')
+    with open(camera_matrix_path, 'rb') as file:
         mtx = pickle.load(file)
-    with open('distortion.pkl', 'rb') as file:
+    with open(distortion_path, 'rb') as file:
         dist = pickle.load(file)
 
     rvecs_all = []
@@ -76,6 +81,11 @@ def estimate_pose(corners, airport, runway):
         slant_distance_est[i] = estimate_slant_distance(tvecs)*runway_width/meters_per_nautic_mile
 
     return ypr_est, slant_distance_est, no_keypoints_idx
+
+def compute_error(pose_est, slant_distance_est, pose_gt, slant_distance_gt):
+    pose_errors = np.degrees(copy.deepcopy(pose_gt-pose_est))
+    distance_errors = slant_distance_gt - slant_distance_est
+    return pose_errors, distance_errors
 
 def main(airport_name, runways, keypoints_file_path, csv_file_path):
     video_sequence_dataset = True
@@ -100,7 +110,9 @@ def main(airport_name, runways, keypoints_file_path, csv_file_path):
 if __name__ == "__main__":
     args = parse_args()
     estimated_pose, estimated_distance = main(args.airport_name, args.runways, args.keypoints_file_path, args.csv_file_path)
-    with open("estimated_pose.pkl", "wb") as f:
+    pose_estimations_path = os.path.join(file_path, 'results/estimated_pose.pkl')
+    distance_estimations_path = os.path.join(file_path, 'results/estimated_distance.pkl')
+    with open(pose_estimations_path, "wb") as f:
         pickle.dump(estimated_pose, f)
-    with open("estimated_distance.pkl", "wb") as f:
+    with open(distance_estimations_path, "wb") as f:
         pickle.dump(estimated_distance, f)

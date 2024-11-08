@@ -3,8 +3,11 @@ import csv
 import pandas as pd
 import numpy as np
 
+dataset_path = os.path.dirname(os.path.abspath(__file__))
+
 def find_by_airport_runway_number(file_name, airport, runway):
-    with open(file_name, 'r') as file:
+    csv_path = os.path.join(dataset_path, file_name)
+    with open(csv_path, 'r') as file:
         reader = csv.DictReader(file)   
         for row in reader:
             if row['Airport'] == airport and row['Runway'] == runway:
@@ -12,7 +15,7 @@ def find_by_airport_runway_number(file_name, airport, runway):
     return None
 
 def get_dataframe(runway, csv_file_name, airport=None):
-    dataset_path  = os.getcwd()
+    #dataset_path  = os.getcwd()
     csv_path = os.path.join(dataset_path, csv_file_name)
     
     df = pd.read_csv(csv_path, sep=';', parse_dates=["time"])

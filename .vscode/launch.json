@@ -9,7 +9,8 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["CYYZ", "05", "C:\\Users\\João Paulo\\Desktop\\UFMG\\Visão\\repos\\vision-based-landing-guidance\\pose_estimation\\bbox_coord_CYYZseq.pkl", "CYYZ_05_35.csv"]
         }
     ]
 }
