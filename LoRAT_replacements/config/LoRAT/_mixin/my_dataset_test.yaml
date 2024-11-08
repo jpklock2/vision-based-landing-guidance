@@ -1,0 +1,7 @@
+# config/LoRAT/_mixin/my_dataset_test.yaml
+- path: "run.data.eval.source.parameters.datasets"
+  value:
+    - name: "MyDataset"
+      type: "SOT"
+      splits:
+        - "test"
