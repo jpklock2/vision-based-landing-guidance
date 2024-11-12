@@ -88,14 +88,14 @@ def compute_error(pose_est, slant_distance_est, pose_gt, slant_distance_gt):
 def main(airport_name, runways, keypoints_file_path, csv_file_path):
     video_sequence_dataset = True
     from_pipeline = False # False if from LARD, true if from tracking
+
+    with open(keypoints_file_path, 'rb') as file:
+        bbox_coord_kp = pickle.load(file)
     
     estimated_pose, estimated_distance, pose_errors, distance_errors = [], [], [], []
     for runway in runways:
         df, sorted_times = get_dataframe(int(runway), csv_file_path)
         bbox_coord, pose_gt, slant_distance_gt = get_ground_truth(df, sorted_times)
-    
-        with open(keypoints_file_path, 'rb') as file:
-            bbox_coord_kp = pickle.load(file)
         #Estimates pose based on detected keypoints
         pose_est_kp, slant_distance_est_kp, _ = estimate_pose(bbox_coord_kp, airport_name, runway)
         #Estimates pose based on groundtruth
