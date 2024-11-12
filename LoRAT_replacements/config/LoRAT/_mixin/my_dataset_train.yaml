@@ -1,0 +1,12 @@
+# config/LoRAT/_mixin/my_dataset_train.yaml
+- path: "run.data.train.source.parameters.datasets"
+  value:
+    - name: "MyDataset"
+      type: "SOT"
+      splits:
+        - "train"
+- path: "run.data.train.sampler"
+  value:
+    type: "random"
+    samples_per_epoch: 11519 # 1392  # set a new value for samples per epoch
+    # weight: multi-dataset sampling weight is not required, since there is only one dataset
