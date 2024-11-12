@@ -91,28 +91,37 @@ def main(airport_name, runways, keypoints_file_path, csv_file_path):
     video_sequence_dataset = True
     from_pipeline = False # False if from LARD, true if from tracking
     
-    estimated_pose, estimated_distance = [], []
+    estimated_pose, estimated_distance, pose_errors, distance_errors = [], [], [], []
     for runway in runways:
         df, sorted_times = get_dataframe(int(runway), csv_file_path)
-        bbox_coord, ypr_gt, slant_distance_gt = get_ground_truth(df, sorted_times)
+        bbox_coord, pose_gt, slant_distance_gt = get_ground_truth(df, sorted_times)
     
         with open(keypoints_file_path, 'rb') as file:
             bbox_coord_kp = pickle.load(file)
         #Estimates pose based on detected keypoints
-        ypr_est_kp, slant_distance_est_kp, _ = estimate_pose(bbox_coord_kp, airport_name, runway)
+        pose_est_kp, slant_distance_est_kp, _ = estimate_pose(bbox_coord_kp, airport_name, runway)
         #Estimates pose based on groundtruth
-        ypr_hat, slant_distance_hat, _ = estimate_pose(bbox_coord, airport_name, runway)
-        estimated_pose.append(ypr_est_kp)
+        #ypr_hat, slant_distance_hat, _ = estimate_pose(bbox_coord, airport_name, runway)
+        estimated_pose.append(pose_est_kp)
         estimated_distance.append(slant_distance_est_kp)
+        pose_error, distance_error = compute_error(pose_est_kp, slant_distance_est_kp, pose_gt, slant_distance_gt)
+        pose_errors.append(pose_error)
+        distance_errors.append(distance_error)
 
-    return estimated_pose, estimated_distance
+    return estimated_pose, estimated_distance, pose_errors, distance_errors
 
 if __name__ == "__main__":
     args = parse_args()
-    estimated_pose, estimated_distance = main(args.airport_name, args.runways, args.keypoints_file_path, args.csv_file_path)
+    estimated_pose, estimated_distance, pose_errors, distance_errors = main(args.airport_name, args.runways, args.keypoints_file_path, args.csv_file_path)
     pose_estimations_path = os.path.join(file_path, 'results/estimated_pose.pkl')
     distance_estimations_path = os.path.join(file_path, 'results/estimated_distance.pkl')
+    pose_errors_path = os.path.join(file_path, 'results/pose_errors.pkl')
+    distance_errors_path = os.path.join(file_path, 'results/distance_errors.pkl')
     with open(pose_estimations_path, "wb") as f:
         pickle.dump(estimated_pose, f)
     with open(distance_estimations_path, "wb") as f:
         pickle.dump(estimated_distance, f)
+    with open(pose_errors_path, "wb") as f:
+        pickle.dump(pose_errors, f)
+    with open(distance_errors_path, "wb") as f:
+        pickle.dump(distance_errors, f)
