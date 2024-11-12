@@ -49,8 +49,7 @@ def estimate_pose(corners, airport, runway):
     objp = np.zeros((1, RUNWAY[0]*RUNWAY[1], 3), np.float32)
     objp[0,:,:2] = np.mgrid[0:RUNWAY[0]/2:0.5, 0:RUNWAY[1]*aspect_ratio:aspect_ratio].T.reshape(-1, 2)
 
-    objpoints = []
-    imgpoints = []
+    objpoints, imgpoints = [], []
     no_keypoints_idx = []
     for i in range(n_images):
         if corners[i,0,0,0] == 0:
@@ -65,8 +64,7 @@ def estimate_pose(corners, airport, runway):
     with open(distortion_path, 'rb') as file:
         dist = pickle.load(file)
 
-    rvecs_all = []
-    tvecs_all = []
+    rvecs_all, tvecs_all = [], []
     ypr_est = np.zeros((n_images, 3))
     slant_distance_est = np.zeros(n_images)
     
