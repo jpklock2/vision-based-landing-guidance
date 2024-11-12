@@ -1,5 +1,6 @@
 import os
 import csv
+import pickle
 import pandas as pd
 import numpy as np
 
@@ -83,3 +84,73 @@ def get_ground_truth(df, sorted_times):
     ypr = np.radians(ypr)
 
     return bbox_coord, ypr, slant_distance
+
+def format_keypoints(detected_keypoints, crop_df_path):
+    output_path = "bbox_coord_cyyz_seq.pkl"
+    original_img_width = 2448
+    original_img_height = 2648
+
+    crop_df = pd.read_csv(crop_df_path, delimiter=',')
+    n_images = len(crop_df)
+    bbox_coord = np.zeros((n_images, 6, 1, 2))
+
+    for i in range(n_images):
+        kp = detected_keypoints[i][0].keypoints.data.cpu()
+        row_data = crop_df.iloc[i]
+        left, upper, width, height = row_data['left'], row_data['upper'], row_data['width'], row_data['height']
+
+        # Return keypoints to original image dimentions
+        x_1 = int(kp[0, 0, 0] / original_img_width * width + left)
+        x_2 = int(kp[0, 1, 0] / original_img_width * width + left)
+        x_3 = int(kp[0, 2, 0] / original_img_width * width + left)
+        x_4 = int(kp[0, 3, 0] / original_img_width * width + left)
+        y_1 = int(kp[0, 0, 1] / original_img_height * height + upper)
+        y_2 = int(kp[0, 1, 1] / original_img_height * height + upper)
+        y_3 = int(kp[0, 2, 1] / original_img_height * height + upper)
+        y_4 = int(kp[0, 3, 1] / original_img_height * height + upper)
+
+        x_list = np.array([x_1, x_2, x_3, x_4])
+        y_list = np.array([y_1, y_2, y_3, y_4])
+
+        #Standardizing keypoint order
+        sorted_idx = np.argsort(y_list)
+
+        if x_list[sorted_idx[-1]] < x_list[sorted_idx[-2]]:
+            x_1 = x_list[sorted_idx[-1]]
+            y_1 = y_list[sorted_idx[-1]]
+            x_2 = x_list[sorted_idx[-2]]
+            y_2 = y_list[sorted_idx[-2]]
+        else:
+            x_1 = x_list[sorted_idx[-2]]
+            y_1 = y_list[sorted_idx[-2]]
+            x_2 = x_list[sorted_idx[-1]]
+            y_2 = y_list[sorted_idx[-1]]
+
+        if x_list[sorted_idx[1]] < x_list[sorted_idx[0]]:
+            x_3 = x_list[sorted_idx[1]]
+            y_3 = y_list[sorted_idx[1]]
+            x_4 = x_list[sorted_idx[0]]
+            y_4 = y_list[sorted_idx[0]]
+        else:
+            x_3 = x_list[sorted_idx[0]]
+            y_3 = y_list[sorted_idx[0]]
+            x_4 = x_list[sorted_idx[1]]
+            y_4 = y_list[sorted_idx[1]]
+
+        #Formating keypoints to pose estimation input format
+        bbox_coord[i, 2, 0, 0] = x_1
+        bbox_coord[i, 2, 0, 1] = y_1
+        bbox_coord[i, 1, 0, 0] = int(interp(x_1, x_2))
+        bbox_coord[i, 1, 0, 1] = int(interp(y_1, y_2))
+        bbox_coord[i, 0, 0, 0] = x_2
+        bbox_coord[i, 0, 0, 1] = y_2
+
+        bbox_coord[i, 5, 0, 0] = x_3
+        bbox_coord[i, 5, 0, 1] = y_3
+        bbox_coord[i, 4, 0, 0] = int(interp(x_3, x_4))
+        bbox_coord[i, 4, 0, 1] = int(interp(y_3, y_4))
+        bbox_coord[i, 3, 0, 0] = x_4
+        bbox_coord[i, 3, 0, 1] = y_4
+
+    with open(output_path, "wb") as file:
+        pickle.dump(bbox_coord, file)
