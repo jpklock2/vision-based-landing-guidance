@@ -93,7 +93,7 @@ def format_keypoints(detected_keypoints, crop_df_path, original_img_width=2448, 
     bbox_coord = np.zeros((n_images, 6, 1, 2))
 
     for i in range(n_images):
-        kp = detected_keypoints[i][0].keypoints.data.cpu()
+        kp = detected_keypoints[i]
         row_data = crop_df.iloc[i]
         left, upper, width, height = row_data['left'], row_data['upper'], row_data['width'], row_data['height']
 
