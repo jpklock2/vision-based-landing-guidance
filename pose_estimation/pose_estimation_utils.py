@@ -85,10 +85,8 @@ def get_ground_truth(df, sorted_times):
 
     return bbox_coord, ypr, slant_distance
 
-def format_keypoints(detected_keypoints, crop_df_path):
+def format_keypoints(detected_keypoints, crop_df_path, original_img_width=2448, original_img_height=2648):
     output_path = "bbox_coord_cyyz_seq.pkl"
-    original_img_width = 2448
-    original_img_height = 2648
 
     crop_df = pd.read_csv(crop_df_path, delimiter=',')
     n_images = len(crop_df)
