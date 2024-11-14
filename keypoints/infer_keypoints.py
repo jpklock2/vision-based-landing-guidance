@@ -36,6 +36,13 @@ def main(pred_x, pred_y, pred_w, pred_h, image_path):
     im.save(cropped_im_path)
     return cropped_im_path, [image_path, left, upper, abs(right-left), abs(upper-lower)]
 
+  cropped_im_path, crop_data = crop_image()
+  model = YOLO('/content/best.pt')
+  results = model.predict(source=cropped_im_path)
+  keypoints = results[0].keypoints.xy
+
+  return keypoints, crop_data
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Crop the image around the tracking detection and predict keypoints")
     parser.add_argument("pred_x", type=int, help="Predicted x coordinate")
