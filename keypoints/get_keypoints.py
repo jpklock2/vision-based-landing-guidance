@@ -141,17 +141,11 @@ def train_keypoints(yaml_dir, train_dir, val_dir, train_weights_dir):
     model.train(data=yaml_dir, epochs=1, imgsz=640, batch=16, workers=2, project=train_weights_dir, name='exp', exist_ok=True)
     return model
 
-def get_keypoints(yaml_dir, base_dir, ground_truth_df_dir, images_dir, destination_dir, train_weights_dir):
-    prep_data_for_keypoint_training(
-        base_dir=base_dir,
-        ground_truth_df_dir= ground_truth_df_dir,
-        images_dir= images_dir,
-        destination_dir= destination_dir
-    )
-    model = train_keypoints(
-        yaml_dir,
-        "{destination_dir}/train/images",
-        "{destination_dir}/val/images", 
-        train_weights_dir
-    )
-    return model
+get_keypoints(
+    yaml_dir = "/content/data.yaml",
+    base_dir='/content/dataset',
+    ground_truth_df_dir="/content/drive/MyDrive/Colab Notebooks/IC/LARD_train_DAAG_DIAP.csv",
+    images_dir="/content/drive/MyDrive/Colab Notebooks/IC/images.zip",
+    destination_dir="/content/lard_images/",
+    train_weights_dir="/content/runs/train"
+)
