@@ -1,5 +1,6 @@
 #!pip install ultralytics
 import os
+import argparse
 from PIL import Image
 from ultralytics import YOLO
 
@@ -35,9 +36,13 @@ def main(pred_x, pred_y, pred_w, pred_h, image_path):
     im.save(cropped_im_path)
     return cropped_im_path, [image_path, left, upper, abs(right-left), abs(upper-lower)]
 
-  cropped_im_path, crop_data = crop_image()
-  model = YOLO('/content/runs/train/exp/weights/best.pt')
-  results = model.predict(source=cropped_im_path)
-  keypoints = results[0].keypoints.xy
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Crop the image around the tracking detection and predict keypoints")
+    parser.add_argument("pred_x", type=int, help="Predicted x coordinate")
+    parser.add_argument("pred_y", type=int, help="Predicted y coordinate")
+    parser.add_argument("pred_w", type=int, help="Predicted width")
+    parser.add_argument("pred_h", type=int, help="Predicted height")
+    parser.add_argument("image_path", type=str, help="Path to the input image")
 
-  return keypoints, crop_data
+    args = parser.parse_args()
+    keypoints, crop_data = main(args.pred_x, args.pred_y, args.pred_w, args.pred_h, args.image_path)
