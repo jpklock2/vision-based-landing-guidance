@@ -5,8 +5,8 @@ from trackit.core.boot.main import main
 
 def setup_arg_parser():
     parser = argparse.ArgumentParser('Set runtime parameters', add_help=False)
-    parser.add_argument('method_name', type=str, help='Method name')
-    parser.add_argument('config_name', type=str, help='Config name')
+    parser.add_argument('--method_name', default='LoRAT', type=str, help='Method name')
+    parser.add_argument('--config_name', default='dinov2', type=str, help='Config name')
     parser.add_argument('--output_dir', help='path where to save')
     parser.add_argument('--dry_run', action='store_true', help='do not save checkpoints and results')
     parser.add_argument('--device', default='cuda', help='device to use for training / testing')
@@ -42,8 +42,7 @@ def setup_arg_parser():
 
     return parser
 
-
-if __name__ == '__main__':
+def main_tracking():
 
     os.environ["PYTHONUNBUFFERED"] = "1"
     os.environ["OMP_NUM_THREADS"] = "1"
@@ -51,4 +50,23 @@ if __name__ == '__main__':
     parser = setup_arg_parser()
     args = parser.parse_args()
     args.root_path = os.path.dirname(os.path.abspath(__file__))
+
+    args.method_name = "LoRAT"
+    args.config_name = "dinov2"
+    args.mixin_config = "evaluation"
+    args.mixin_config = "my_dataset_test"
+    args.weight_path = "/mnt/d/Master/Airport_Runway_Detection/LARD/data/LoRAT_output/LoRAT-dinov2-mixin-my_dataset_train-2024.08.15-04.05.01-266394/LoRAT-dinov2-mixin-my_dataset_train-2024.08.15-04.05.01-266394/checkpoint/epoch_21/model.bin"
+    args.run_id = "LoRAT-dinov2-mixin-my_dataset_test-mixin-evaluation-2024.11.14-11.12.11-742434"
+    args.output_dir = "/mnt/d/Master/Airport_Runway_Detection/vision-based-landing-guidance/LoRAT/output/LoRAT-dinov2-mixin-my_dataset_test-mixin-evaluation-2024.11.14-11.12.11-742434"
+    args.wandb_run_offline = True
+    args.disable_wandb = True
+
     main(args)
+
+    #   |& tee -a /mnt/d/Master/Airport_Runway_Detection/LARD/data/LoRAT_output/LoRAT-dinov2-mixin-my_dataset_test-mixin-evaluation-2024.11.14-11.12.11-742434/train_stdout.log
+    # PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 python main.py LoRAT dinov2 --run_id LoRAT-dinov2-mixin-my_dataset_test-mixin-evaluation-2024.11.14-11.12.11-742434 --output_dir /mnt/d/Master/Airport_Runway_Detection/LARD/data/LoRAT_output/LoRAT-dinov2-mixin-my_dataset_test-mixin-evaluation-2024.11.14-11.12.11-742434 --wandb_run_offline --disable_wandb --weight_path /mnt/d/Master/Airport_Runway_Detection/LARD/data/LoRAT_output/LoRAT-dinov2-mixin-my_dataset_train-2024.08.15-04.05.01-266394/LoRAT-dinov2-mixin-my_dataset_train-2024.08.15-04.05.01-266394/checkpoint/epoch_21/model.bin --mixin_config my_dataset_test --mixin_config evaluation |& tee -a /mnt/d/Master/Airport_Runway_Detection/LARD/data/LoRAT_output/LoRAT-dinov2-mixin-my_dataset_test-mixin-evaluation-2024.11.14-11.12.11-742434/train_stdout.log
+
+
+if __name__ == '__main__':
+
+    main_tracking()

@@ -1,0 +1,5 @@
+inputs/*
+models/*
+output/*
+LoRAT/*
+*/__pycache__/*
