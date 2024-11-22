@@ -1,1 +1,4 @@
 pandas==2.2.3
+opencv-python-headless==4.10.0.84
+opencv-fixer==0.2.5
+ultralytics==8.3.34
