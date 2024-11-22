@@ -11,6 +11,7 @@ services:
       - ./outputs:/workdir/outputs
       - ./models:/workdir/models
       - ./LoRAT:/workdir/LoRAT
+      - ./LoRAT/trackit/datasets/cache:/workdir/LoRAT/trackit/datasets/cache
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
       - ${DEBUG_PORT}:${DEBUG_PORT}

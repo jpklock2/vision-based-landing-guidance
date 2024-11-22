@@ -12,7 +12,7 @@ def create_cropped_image_path(image_path):
   return os.path.join(cropped_dir, file_name)
 
 
-def calculate_coordinates(pred_x, pred_y, pred_w, pred_h, width, height, min_percentage):
+def calculate_coordinates_new(pred_x, pred_y, pred_w, pred_h, width, height, min_percentage):
   left = int ((pred_x - pred_w) - min_percentage*pred_w)
   left = left if left > 0 else 0
 
@@ -27,6 +27,21 @@ def calculate_coordinates(pred_x, pred_y, pred_w, pred_h, width, height, min_per
   return left, upper, right, lower
 
 
+def calculate_coordinates(pred_x, pred_y, pred_w, pred_h, width, height, min_percentage):
+      left = int (pred_x - min_percentage*pred_w)
+      left = left if left > 0 else 0
+
+      right = int (pred_x + pred_w + min_percentage*pred_w)
+      right = right if right < width else width
+
+      upper = int (pred_y - min_percentage*pred_h)
+      upper = upper if upper > 0 else 0
+
+      lower = int (pred_y+ pred_h + min_percentage*pred_h)
+      lower = lower if lower < height else height
+      return left, upper, right, lower
+
+
 def crop_image(pred_x, pred_y, pred_w, pred_h, image_path, percentage = 0.2):
   im = Image.open(image_path)
   width, height = im.size
@@ -37,12 +52,19 @@ def crop_image(pred_x, pred_y, pred_w, pred_h, image_path, percentage = 0.2):
 
 def main_keypoints(pred_x, pred_y, pred_w, pred_h, image_path):
   cropped_im_path, crop_data = crop_image(pred_x, pred_y, pred_w, pred_h, image_path)
-  model_path = os.path.join("/mnt/d/Master/Airport_Runway_Detection/vision-based-landing-guidance", "models", "keypoints", "model.pt")
+  model_path = os.path.join("models", "keypoints", "model.pt")
   model = YOLO(model_path)
   results = model.predict(source=cropped_im_path)
-  keypoints = results[0].keypoints.xy
+  keypoints = None
+  if len(results) > 0:
+     res = results[0]
+     if res.keypoints is not None:
+        kp = results[0].keypoints
+        if kp.xy is not None:
+           keypoints = kp.xy.detach().cpu().numpy()
+  # keypoints = results[0].keypoints.xy
 
-  return keypoints, crop_data
+  return keypoints, [crop_data]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Crop the image around the tracking detection and predict keypoints")

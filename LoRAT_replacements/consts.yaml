@@ -42,4 +42,4 @@ TempleColor_PATH: ''
 Youtube_VIS_PATH: ''
 ImageNet-21k_PATH: ''
 
-MyDataset_PATH: '/mnt/d/Master/Airport_Runway_Detection/LARD/data/MyDataset'
+MyDataset_PATH: 'inputs'

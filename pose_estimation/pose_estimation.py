@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 import math
-from pose_estimation_utils import *
+from pose_estimation.pose_estimation_utils import *
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -42,7 +42,7 @@ def estimate_pose(corners, airport, runway):
     runway_parameters = find_by_airport_runway_number('runway_data.csv', airport, runway)
     runway_width = float(runway_parameters['Width'])
     aspect_ratio = float(runway_parameters['Aspect Ratio'])
-    yaw_offset = math.radians(int(runway_parameters['Yaw Offset']))
+    yaw_offset = math.radians(float(runway_parameters['Yaw Offset']))
     n_images = corners.shape[0]
     meters_per_nautic_mile = 1852
 
@@ -85,10 +85,10 @@ def compute_error(pose_est, slant_distance_est, pose_gt, slant_distance_gt):
     distance_errors = slant_distance_gt - slant_distance_est
     return pose_errors, distance_errors
 
-def main(airport_name, runways, keypoints_file_path, csv_file_path=None):
+def main_pose_estimation(airport_name, runways, bbox_coord_kp, csv_file_path=None):
 
-    with open(keypoints_file_path, 'rb') as file:
-        bbox_coord_kp = pickle.load(file)
+    # with open(keypoints_file_path, 'rb') as file:
+    #     bbox_coord_kp = pickle.load(file)
     
     estimated_pose, estimated_distance, pose_errors, distance_errors = [], [], [], []
     for runway in runways:
@@ -110,7 +110,7 @@ def main(airport_name, runways, keypoints_file_path, csv_file_path=None):
 
 if __name__ == "__main__":
     args = parse_args()
-    estimated_pose, estimated_distance, pose_errors, distance_errors = main(args.airport_name, args.runways, args.keypoints_file_path, args.csv_file_path)
+    estimated_pose, estimated_distance, pose_errors, distance_errors = main_pose_estimation(args.airport_name, args.runways, args.keypoints_file_path, args.csv_file_path)
     pose_estimations_path = os.path.join(file_path, 'results/estimated_pose.pkl')
     distance_estimations_path = os.path.join(file_path, 'results/estimated_distance.pkl')
     pose_errors_path = os.path.join(file_path, 'results/pose_errors.pkl')

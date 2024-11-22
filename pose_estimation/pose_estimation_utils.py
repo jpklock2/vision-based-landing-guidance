@@ -85,27 +85,29 @@ def get_ground_truth(df, sorted_times):
 
     return bbox_coord, ypr, slant_distance
 
-def format_keypoints(detected_keypoints, crop_df_path, original_img_width=2448, original_img_height=2648):
-    output_path = "bbox_coord_cyyz_seq.pkl"
+def format_keypoints(detected_keypoints, crop_data, original_img_width=2448, original_img_height=2648):
+    # output_path = "bbox_coord_cyyz_seq.pkl"
 
-    crop_df = pd.read_csv(crop_df_path, delimiter=',')
-    n_images = len(crop_df)
+    # crop_df = pd.read_csv(crop_df_path, delimiter=',')
+    n_images = len(crop_data)
     bbox_coord = np.zeros((n_images, 6, 1, 2))
 
     for i in range(n_images):
         kp = detected_keypoints[i]
-        row_data = crop_df.iloc[i]
-        left, upper, width, height = row_data['left'], row_data['upper'], row_data['width'], row_data['height']
+        # row_data = crop_df.iloc[i]
+        row_data = crop_data[i]
+        # left, upper, width, height = row_data['left'], row_data['upper'], row_data['width'], row_data['height']
+        left, upper, width, height = row_data[1], row_data[2], row_data[3], row_data[4]
 
         # Return keypoints to original image dimentions
-        x_1 = int(kp[0, 0, 0] / original_img_width * width + left)
-        x_2 = int(kp[0, 1, 0] / original_img_width * width + left)
-        x_3 = int(kp[0, 2, 0] / original_img_width * width + left)
-        x_4 = int(kp[0, 3, 0] / original_img_width * width + left)
-        y_1 = int(kp[0, 0, 1] / original_img_height * height + upper)
-        y_2 = int(kp[0, 1, 1] / original_img_height * height + upper)
-        y_3 = int(kp[0, 2, 1] / original_img_height * height + upper)
-        y_4 = int(kp[0, 3, 1] / original_img_height * height + upper)
+        x_1 = int(kp[0, 0] / original_img_width * width + left)
+        x_2 = int(kp[1, 0] / original_img_width * width + left)
+        x_3 = int(kp[2, 0] / original_img_width * width + left)
+        x_4 = int(kp[3, 0] / original_img_width * width + left)
+        y_1 = int(kp[0, 1] / original_img_height * height + upper)
+        y_2 = int(kp[1, 1] / original_img_height * height + upper)
+        y_3 = int(kp[2, 1] / original_img_height * height + upper)
+        y_4 = int(kp[3, 1] / original_img_height * height + upper)
 
         x_list = np.array([x_1, x_2, x_3, x_4])
         y_list = np.array([y_1, y_2, y_3, y_4])
@@ -150,5 +152,7 @@ def format_keypoints(detected_keypoints, crop_df_path, original_img_width=2448, 
         bbox_coord[i, 3, 0, 0] = x_4
         bbox_coord[i, 3, 0, 1] = y_4
 
-    with open(output_path, "wb") as file:
-        pickle.dump(bbox_coord, file)
+    # with open(output_path, "wb") as file:
+    #     pickle.dump(bbox_coord, file)
+
+    return bbox_coord
