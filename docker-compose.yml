@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: python /workdir/main.py --input_dir CYUL_06L_35
+    # command: python -m debugpy --wait-for-client --listen ${SERVER_HOST}:${DEBUG_PORT} /workdir/main.py --input_dir CYUL_06L_35
     env_file:
       - .env
     volumes:

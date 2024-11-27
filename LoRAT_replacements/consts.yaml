@@ -1,7 +1,7 @@
 # Misc Settings
 num_train_workers: 6
 num_val_workers: 6
-num_eval_workers: 4
+num_eval_workers: 6
 num_io_threads_per_worker: 1
 on_shared_file_system: false
 

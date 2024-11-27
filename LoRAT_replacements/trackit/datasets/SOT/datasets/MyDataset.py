@@ -139,7 +139,7 @@ class MyDataset_Seed(BaseSeed):
         #                     ]
         # sequence_names = ['DAAG_23_500']
         # sequence_names = ['CYUL_06L_35_test']
-        sequence_names = ['CYUL_06L_35_empty']
+        sequence_names = ['CYUL_06L_35']
         
         # Set the total number of sequences (Optional, for progress bar)
         constructor.set_total_number_of_sequences(len(sequence_names))

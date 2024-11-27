@@ -42,9 +42,3 @@ RUN ${WORKDIR}/replace_files.sh
 
 # Expose server port
 EXPOSE 80
-
-# Our service
-CMD python ${WORKDIR}/main.py --input_dir /workdir/inputs/CYUL_06L_35_empty --output_dir /workdir/outputs
-
-# Our service debug
-# CMD python -m debugpy --wait-for-client --listen ${SERVER_HOST}:${DEBUG_PORT} ${WORKDIR}/main.py --input_dir /workdir/inputs/CYUL_06L_35_empty --output_dir /workdir/outputs

@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
-            "args": "--input_dir inputs/CYUL_06L_35_empty --output_dir outputs"
+            "args": "--input_dir CYUL_06L_35"
         }
     ]
 }
