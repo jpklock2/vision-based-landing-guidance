@@ -1,6 +1,6 @@
 # Pose Estimation
 
-It is possible to run the Pose Estimation module as a stand-alone module, with pre-defined or detected runway corner points.
+The Pose Estimation module can operate independently, using either pre-defined or detected runway corner points.
 
 This module is structured as follows:
 
