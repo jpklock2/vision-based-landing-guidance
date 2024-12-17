@@ -67,7 +67,7 @@ where $(x_1, y_1)$ is the lower rightmost corner, $(x_2, y_2)$ is the midway poi
 
 ## Ground Truth
 
-To compute the estimation errors, a ground truth file is required. This file must be a CSV with the same structure as the CSV files in the LARD dataset.
+To compute the estimation errors (optional), a ground truth file is required. This file must be a CSV with the same structure as the CSV files in the LARD dataset.
 
 ## How to Run
 
