@@ -17,8 +17,6 @@ pose_estimation
 
 ## Camera Calibration
 
-The camera_calibration folder must contain the camera_matrix.pkl and the distortion.pkl files, refering to the intrinsic parameters of the camera and its distortion coefficients, respectively. The camera_matrix.pkl is a pickle file of a numpy matrix of the following format:
-
 The camera_calibration folder must include two files: camera_matrix.pkl and distortion.pkl. These files contain the camera's intrinsic parameters and distortion coefficients, respectively.
 
 - camera_matrix.pkl: A pickle file storing a NumPy matrix that represents the camera's intrinsic parameters in the following format:
@@ -57,12 +55,12 @@ For this module to independently estimate the pose, a pickle file containing an 
 Below is an example of a keypoint array for a single image:
 
 ```
-[[[[x_1][y_1]]]
-[[[x_2][y_2]]]
-[[[x_3][y_3]]]
-[[[x_4][y_4]]]
-[[[x_5][y_5]]]
-[[[x_6][y_6]]]]
+[[[[x_1	y_1]]]
+[[[x_2	y_2]]]
+[[[x_3	y_3]]]
+[[[x_4	y_4]]]
+[[[x_5	y_5]]]
+[[[x_6	y_6]]]]
 ```
 
 where $(x_1, y_1)$ is the lower rightmost corner, $(x_2, y_2)$ is the midway point between the two lower corners, $(x_3, y_3)$ is the lower leftmost corner, $(x_4, y_4)$ is the upper rightmost corner, $(x_5, y_5)$ is the midway point between the two upper corners, and $(x_6, y_6)$ is the upper leftmost corner.
@@ -72,3 +70,4 @@ where $(x_1, y_1)$ is the lower rightmost corner, $(x_2, y_2)$ is the midway poi
 To compute the estimation errors, a ground truth file is required. This file must be a CSV with the same structure as the CSV files in the LARD dataset.
 
 ## How to Run
+
