@@ -28,6 +28,7 @@ K = \begin{bmatrix}
 f_x & 0 & u_0 \\
 0 & f_y & v_0 \\
 0 & 0 & 1
+\end{bmatrix}
 $$
 
 where $f_x$ and $f_y$ are the focal lengths in the x and y axis, and $u_0$ and $v_0$ are the camera's principal points in the x and y axis.
