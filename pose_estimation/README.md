@@ -57,7 +57,12 @@ For this module to independently estimate the pose, a pickle file containing an 
 Below is an example of a keypoint array for a single image:
 
 ```
-[[[[x_1][y_1]]][[[x_2][y_2]]][[[x_3][y_3]]][[[x_4][y_4]]][[[x_5][y_5]]][[[x_6][y_6]]]]
+[[[[x_1][y_1]]]
+[[[x_2][y_2]]]
+[[[x_3][y_3]]]
+[[[x_4][y_4]]]
+[[[x_5][y_5]]]
+[[[x_6][y_6]]]]
 ```
 
 where $(x_1, y_1)$ is the lower rightmost corner, $(x_2, y_2)$ is the midway point between the two lower corners, $(x_3, y_3)$ is the lower leftmost corner, $(x_4, y_4)$ is the upper rightmost corner, $(x_5, y_5)$ is the midway point between the two upper corners, and $(x_6, y_6)$ is the upper leftmost corner.
