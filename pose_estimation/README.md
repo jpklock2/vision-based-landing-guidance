@@ -77,6 +77,6 @@ To run the code, simply call `pose_estimation.py` inside the `pose_estimation` f
 python pose_estimation.py airport_name runways keypoints_file_path --csv_file_path groundtruth_path
 ```
 
-where 'airport_name' is a string containing the airport's ICAO code; 'runways' is a list of landing designators of interest; 'keypoints_file_path' is the path to the keypoint pickle file; and groundtruth_path is the path to the ground truth CSV file.
+where `airport_name` is a string containing the airport's ICAO code; `runways` is a list of landing designators of interest; `keypoints_file_path` is the path to the keypoint pickle file; and `groundtruth_path` is the path to the ground truth CSV file.
 
-A 'results' folder is created at the end of execution to store pickle files with the estimated aircraft poses, slant distances to the runway, pose estimation errors and slant distance errors.
+A `results` folder is created at the end of execution to store pickle files with the estimated aircraft poses, slant distances to the runway, pose estimation errors and slant distance errors.
