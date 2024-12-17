@@ -5,7 +5,8 @@ import cv2
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 import math
-from pose_estimation.pose_estimation_utils import *
+#from pose_estimation.pose_estimation_utils import *
+from pose_estimation_utils import *
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,7 +15,7 @@ def parse_args():
     parser.add_argument('airport_name', help='ICAO airport code')
     parser.add_argument('runways', nargs='+', help='A list of runway codes')
     parser.add_argument('keypoints_file_path',help=('path to detected keypoints file'))
-    parser.add_argument('csv_file_path', help='path to groundtruth csv')
+    parser.add_argument('--csv_file_path', help='path to groundtruth csv')
     args = parser.parse_args()
     return args
 

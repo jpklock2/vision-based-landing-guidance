@@ -17,9 +17,9 @@ pose_estimation
 
 ## Camera Calibration
 
-The camera_calibration folder must include two files: camera_matrix.pkl and distortion.pkl. These files contain the camera's intrinsic parameters and distortion coefficients, respectively.
+The `camera_calibration` folder must include two files: `camera_matrix.pkl` and `distortion.pkl`. These files contain the camera's intrinsic parameters and distortion coefficients, respectively.
 
-- camera_matrix.pkl: A pickle file storing a NumPy matrix that represents the camera's intrinsic parameters in the following format:
+- `camera_matrix.pkl`: A pickle file storing a NumPy matrix that represents the camera's intrinsic parameters in the following format:
 
 $$
 K = \begin{bmatrix}
@@ -31,7 +31,7 @@ $$
 
 where $f_x$ and $f_y$ are the focal lengths in the x and y axis, and $u_0$ and $v_0$ are the camera's principal points in the x and y axis.
 
-- distortion.pkl: A pickle file storing a NumPy array with the camera's distortion coefficients.
+- `distortion.pkl`: A pickle file storing a NumPy array with the camera's distortion coefficients.
 
 ## Runway Data
 
@@ -71,3 +71,12 @@ To compute the estimation errors (optional), a ground truth file is required. Th
 
 ## How to Run
 
+To run the code, simply call `pose_estimation.py` inside the `pose_estimation` folder:
+
+```
+python pose_estimation.py airport_name runways keypoints_file_path --csv_file_path groundtruth_path
+```
+
+where 'airport_name' is a string containing the airport's ICAO code; 'runways' is a list of landing designators of interest; 'keypoints_file_path' is the path to the keypoint pickle file; and groundtruth_path is the path to the ground truth CSV file.
+
+A 'results' folder is created at the end of execution to store pickle files with the estimated aircraft poses, slant distances to the runway, pose estimation errors and slant distance errors.
