@@ -8,7 +8,11 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import random
 import shutil
+import zipfile
+import argparse
 from ultralytics import YOLO
+
+file_path  = os.path.dirname(os.path.abspath(__file__))
 
 def create_yolo_annotations(df, data_dir, dest_dir, crop_dir):
   image_dir, label_dir = data_dir
@@ -100,13 +104,11 @@ def create_yolo_annotations(df, data_dir, dest_dir, crop_dir):
       writer = csv.writer(file)
       writer.writerows(all_crop_data)
 
-def prep_data_for_keypoint_training(base_dir, ground_truth_df_dir, images_dir, destination_dir):
-    train_img_dir = os.path.join(base_dir, 'train', 'images')
-    train_label_dir = os.path.join(base_dir, 'train', 'labels')
-    train_crop_dir = os.path.join(base_dir, 'train', 'crop_data')
-    val_img_dir = os.path.join(base_dir, 'val', 'images')
-    val_label_dir = os.path.join(base_dir, 'val', 'labels')
-    val_crop_dir = os.path.join(base_dir, 'val', 'crop_data')
+def prep_data_for_keypoint_training(ground_truth_df_dir, images_dir, train_img_dir, val_img_dir):
+    train_label_dir = os.path.join(file_path, 'train', 'labels')
+    train_crop_dir = os.path.join(file_path, 'train', 'crop_data')
+    val_label_dir = os.path.join(file_path, 'val', 'labels')
+    val_crop_dir = os.path.join(file_path, 'val', 'crop_data')
 
     os.makedirs(train_img_dir, exist_ok=True)
     os.makedirs(train_label_dir, exist_ok=True)
@@ -117,16 +119,20 @@ def prep_data_for_keypoint_training(base_dir, ground_truth_df_dir, images_dir, d
 
     lard_df = pd.read_csv(ground_truth_df_dir, delimiter=';')
 
-    !unzip "{images_dir}" -d "{destination_dir}"
+    destination_dir = os.path.join(file_path, 'unzipped_images')
+    os.makedirs(destination_dir, exist_ok=True)
+
+    with zipfile.ZipFile(images_dir, 'r') as zip_ref:
+      zip_ref.extractall(destination_dir)
 
     train, test = train_test_split(lard_df, test_size=0.2, shuffle=True)
     create_yolo_annotations(train, [f"{destination_dir}/images", train_label_dir], [train_img_dir, train_label_dir], train_crop_dir)
-    create_yolo_annotations(train, [f"{destination_dir}/images", val_label_dir], [val_img_dir, val_label_dir], val_crop_dir)
+    create_yolo_annotations(test, [f"{destination_dir}/images", val_label_dir], [val_img_dir, val_label_dir], val_crop_dir)
 
-def train_keypoints(yaml_dir, train_dir, val_dir, train_weights_dir):
+def train_keypoints(train_img_dir, val_img_dir):
     data_yaml_content = f"""
-    train: {train_dir}
-    val: {val_dir}
+    train: {train_img_dir}
+    val: {val_img_dir}
 
     nc: 1
     names: ['runnaway']
@@ -134,18 +140,39 @@ def train_keypoints(yaml_dir, train_dir, val_dir, train_weights_dir):
     kpt_shape: [4, 2]
     """
 
-    with open(yaml_dir, 'w') as file:
+    train_yaml_path = os.path.join(file_path, 'train_yaml_path.yaml')
+    with open(train_yaml_path, 'w') as file:
         file.write(data_yaml_content)
     
+    
+    train_weights_dir = os.path.join(file_path, 'results')
+    os.makedirs(train_weights_dir, exist_ok=True)
+
     model = YOLO('yolov8n-pose.yaml')
-    model.train(data=yaml_dir, epochs=1, imgsz=640, batch=16, workers=2, project=train_weights_dir, name='exp', exist_ok=True)
+    model.train(data=train_yaml_path, epochs=1, imgsz=640, batch=16, workers=2, project=train_weights_dir, name='exp', exist_ok=True)
     return model
 
-get_keypoints(
-    yaml_dir = "/content/data.yaml",
-    base_dir='/content/dataset',
-    ground_truth_df_dir="/content/drive/MyDrive/Colab Notebooks/IC/LARD_train_DAAG_DIAP.csv",
-    images_dir="/content/drive/MyDrive/Colab Notebooks/IC/images.zip",
-    destination_dir="/content/lard_images/",
-    train_weights_dir="/content/runs/train"
-)
+
+def get_keypoints(ground_truth_df_dir, images_dir):
+    train_img_dir = os.path.join(file_path, 'train', 'images')
+    val_img_dir = os.path.join(file_path, 'val', 'images')
+
+    prep_data_for_keypoint_training(
+        ground_truth_df_dir= ground_truth_df_dir,
+        images_dir= images_dir,
+        train_img_dir = train_img_dir,
+        val_img_dir = val_img_dir
+    )
+    model = train_keypoints(
+        train_img_dir = train_img_dir,
+        val_img_dir = val_img_dir
+    )
+    return model
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser(description="Prep data for yolo annotation, crops it around the ground truth and train it")
+  parser.add_argument("zip_images_dir", type=str, help="Path to the zip folder that contains the images")
+  parser.add_argument("ground_truth_dir", type=str, help="Path to the csv file that contains the images annotations")
+
+  args = parser.parse_args()
+  model = get_keypoints(args.ground_truth_dir, args.zip_images_dir)
